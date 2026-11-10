@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["pustaka"]
+}
+
+model Book {
+  id        String   @id
+  judul     String
+  penulis   String
+  kategori  String
+  tahun     Int      @default(2024)
+  stok      Int      @default(1)
+  status    String   @default("Tersedia")
+  sinopsis  String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("books")
+  @@schema("pustaka")
+}

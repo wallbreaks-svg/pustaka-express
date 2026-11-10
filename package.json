@@ -1,0 +1,43 @@
+{
+  "name": "pustaka-express",
+  "version": "1.0.0",
+  "description": "Aplikasi Manajemen Perpustakaan Digital berbasis Express, HTML, CSS, JavaScript, Prisma ORM, dan Neon PostgreSQL",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsx server.js",
+    "dev": "tsx watch server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:seed": "tsx prisma/seed.js",
+    "screenshots": "tsx take-screenshots.js",
+    "evidence": "tsx generate-full-evidence.js"
+  },
+  "keywords": [
+    "express",
+    "crud",
+    "javascript",
+    "library",
+    "html",
+    "css",
+    "prisma",
+    "neon",
+    "postgresql"
+  ],
+  "author": "Rifqy Aqila",
+  "license": "ISC",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
+    "@prisma/adapter-neon": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.9",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "prisma": "^7.10.1",
+    "puppeteer-core": "^24.40.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.7.3"
+  }
+}

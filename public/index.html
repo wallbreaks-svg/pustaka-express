@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PustakaKu - Sistem Manajemen Perpustakaan Digital</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- NAVBAR HEADER -->
+  <header class="navbar">
+    <div class="container navbar-content">
+      <div class="brand">
+        <div class="brand-icon">📚</div>
+        <div>
+          <h1 class="brand-title">PustakaKu</h1>
+          <p class="brand-subtitle">Sistem Manajemen Perpustakaan Digital</p>
+        </div>
+      </div>
+      <div class="navbar-actions">
+        <span class="badge badge-tech">Express.js + Prisma</span>
+        <span class="badge badge-neon">🐘 Neon PostgreSQL</span>
+        <span class="badge badge-success-outline">● Online</span>
+        <a href="#formSection" class="btn btn-primary btn-sm">
+          <span>+ Tambah Buku</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container main-content">
+
+    <!-- STATS DASHBOARD -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-indigo">📖</div>
+        <div class="stat-info">
+          <span class="stat-label">Total Judul Buku</span>
+          <span class="stat-value" id="statTotalBooks">0</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-emerald">📦</div>
+        <div class="stat-info">
+          <span class="stat-label">Total Eksemplar Stok</span>
+          <span class="stat-value" id="statTotalStock">0</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-amber">🏷️</div>
+        <div class="stat-info">
+          <span class="stat-label">Kategori Berbeda</span>
+          <span class="stat-value" id="statCategories">0</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-cyan">✅</div>
+        <div class="stat-info">
+          <span class="stat-label">Buku Siap Pinjam</span>
+          <span class="stat-value" id="statAvailable">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT GRID: FORM (POST) & DATA TABLE (GET/PUT/DELETE) -->
+    <div class="content-layout">
+
+      <!-- LEFT COLUMN: FORM POST (TAMBAH DATA BUKU) -->
+      <aside class="sidebar-column" id="formSection">
+        <div class="card form-card">
+          <div class="card-header">
+            <div class="card-header-icon">✍️</div>
+            <div>
+              <h2 class="card-title">Tambah Buku Baru</h2>
+              <p class="card-subtitle">Method: <strong class="text-post">POST /api/books</strong></p>
+            </div>
+          </div>
+
+          <form id="addBookForm" class="form-body">
+            <!-- Judul -->
+            <div class="form-group">
+              <label for="addJudul">Judul Buku <span class="required">*</span></label>
+              <input type="text" id="addJudul" class="form-control" placeholder="Contoh: Pemrograman Web Modern" required>
+            </div>
+
+            <!-- Penulis -->
+            <div class="form-group">
+              <label for="addPenulis">Penulis / Pengarang <span class="required">*</span></label>
+              <input type="text" id="addPenulis" class="form-control" placeholder="Contoh: Rifqy Aqila" required>
+            </div>
+
+            <!-- Row: Kategori & Tahun -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="addKategori">Kategori <span class="required">*</span></label>
+                <select id="addKategori" class="form-control" required>
+                  <option value="" disabled selected>Pilih Kategori</option>
+                  <option value="Teknologi">Teknologi</option>
+                  <option value="Fiksi">Fiksi</option>
+                  <option value="Sains">Sains</option>
+                  <option value="Pengembangan Diri">Pengembangan Diri</option>
+                  <option value="Bisnis">Bisnis</option>
+                  <option value="Sejarah">Sejarah</option>
+                  <option value="Desain">Desain</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="addTahun">Tahun Terbit</label>
+                <input type="number" id="addTahun" class="form-control" value="2024" min="1900" max="2099">
+              </div>
+            </div>
+
+            <!-- Row: Stok & Status -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="addStok">Jumlah Stok</label>
+                <input type="number" id="addStok" class="form-control" value="5" min="0">
+              </div>
+
+              <div class="form-group">
+                <label for="addStatus">Status Buku</label>
+                <select id="addStatus" class="form-control">
+                  <option value="Tersedia" selected>Tersedia</option>
+                  <option value="Dipinjam">Dipinjam</option>
+                  <option value="Habis">Habis</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Sinopsis -->
+            <div class="form-group">
+              <label for="addSinopsis">Deskripsi / Sinopsis Singkat</label>
+              <textarea id="addSinopsis" class="form-control" rows="2" placeholder="Tuliskan gambaran singkat buku ini..."></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-block" id="btnSubmitAdd">
+                <span class="btn-icon">➕</span> Simpan ke Perpustakaan
+              </button>
+              <button type="reset" class="btn btn-secondary btn-block">
+                <span>🔄 Reset Form</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </aside>
+
+      <!-- RIGHT COLUMN: DAFTAR BUKU (GET, PUT, DELETE) -->
+      <section class="main-column">
+        <div class="card table-card">
+          
+          <!-- Table Toolbar -->
+          <div class="table-toolbar">
+            <div class="toolbar-title-wrap">
+              <h2 class="card-title">Koleksi Buku Perpustakaan</h2>
+              <span class="badge badge-info" id="dataCountBadge">Memuat data...</span>
+            </div>
+
+            <div class="toolbar-controls">
+              <!-- Search Box -->
+              <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="Cari judul, penulis, atau ID...">
+                <button type="button" id="clearSearchBtn" class="clear-btn" style="display: none;">✕</button>
+              </div>
+
+              <!-- Filter Kategori -->
+              <div class="filter-select-wrap">
+                <select id="categoryFilter" class="filter-select">
+                  <option value="Semua">Semua Kategori</option>
+                  <option value="Teknologi">Teknologi</option>
+                  <option value="Fiksi">Fiksi</option>
+                  <option value="Sains">Sains</option>
+                  <option value="Pengembangan Diri">Pengembangan Diri</option>
+                  <option value="Bisnis">Bisnis</option>
+                  <option value="Sejarah">Sejarah</option>
+                  <option value="Desain">Desain</option>
+                </select>
+              </div>
+
+              <!-- Refresh Button -->
+              <button type="button" id="refreshBtn" class="btn btn-outline btn-icon-only" title="Muat Ulang Data (GET)">
+                🔄
+              </button>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 100px;">ID</th>
+                  <th>Judul Buku & Penulis</th>
+                  <th style="width: 150px;">Kategori</th>
+                  <th style="width: 80px; text-align: center;">Tahun</th>
+                  <th style="width: 80px; text-align: center;">Stok</th>
+                  <th style="width: 110px; text-align: center;">Status</th>
+                  <th style="width: 140px; text-align: center;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="booksTableBody">
+                <!-- Data loaded via GET fetch in app.js -->
+                <tr>
+                  <td colspan="7" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Mengambil data dari server Express...</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State Container -->
+          <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📭</div>
+            <h3 class="empty-state-title">Tidak Ada Buku Ditemukan</h3>
+            <p class="empty-state-desc">Belum ada buku yang sesuai dengan pencarian atau filter yang dipilih.</p>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- MODAL EDIT BUKU (PUT) -->
+  <div id="editModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-badge-icon">✏️</span>
+            <div>
+              <h3 class="modal-title">Edit Data Buku</h3>
+              <p class="modal-subtitle">Method: <strong class="text-put">PUT /api/books/:id</strong></p>
+            </div>
+          </div>
+          <button type="button" class="modal-close-btn" id="closeEditModalBtn">&times;</button>
+        </div>
+
+        <form id="editBookForm">
+          <div class="modal-body">
+            <input type="hidden" id="editBookId">
+
+            <div class="id-display-box">
+              <span class="id-display-label">Kode Buku (ID):</span>
+              <span class="id-display-val" id="editIdDisplay">-</span>
+            </div>
+
+            <!-- Judul -->
+            <div class="form-group">
+              <label for="editJudul">Judul Buku <span class="required">*</span></label>
+              <input type="text" id="editJudul" class="form-control" required>
+            </div>
+
+            <!-- Penulis -->
+            <div class="form-group">
+              <label for="editPenulis">Penulis / Pengarang <span class="required">*</span></label>
+              <input type="text" id="editPenulis" class="form-control" required>
+            </div>
+
+            <!-- Row: Kategori & Tahun -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editKategori">Kategori <span class="required">*</span></label>
+                <select id="editKategori" class="form-control" required>
+                  <option value="Teknologi">Teknologi</option>
+                  <option value="Fiksi">Fiksi</option>
+                  <option value="Sains">Sains</option>
+                  <option value="Pengembangan Diri">Pengembangan Diri</option>
+                  <option value="Bisnis">Bisnis</option>
+                  <option value="Sejarah">Sejarah</option>
+                  <option value="Desain">Desain</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="editTahun">Tahun Terbit</label>
+                <input type="number" id="editTahun" class="form-control" min="1900" max="2099">
+              </div>
+            </div>
+
+            <!-- Row: Stok & Status -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editStok">Jumlah Stok</label>
+                <input type="number" id="editStok" class="form-control" min="0">
+              </div>
+
+              <div class="form-group">
+                <label for="editStatus">Status Buku</label>
+                <select id="editStatus" class="form-control">
+                  <option value="Tersedia">Tersedia</option>
+                  <option value="Dipinjam">Dipinjam</option>
+                  <option value="Habis">Habis</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Sinopsis -->
+            <div class="form-group">
+              <label for="editSinopsis">Deskripsi / Sinopsis</label>
+              <textarea id="editSinopsis" class="form-control" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelEditBtn">Batal</button>
+            <button type="submit" class="btn btn-primary" id="btnSubmitEdit">
+              <span>💾 Simpan Perubahan (PUT)</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL KONFIRMASI HAPUS (DELETE) -->
+  <div id="deleteModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-sm">
+      <div class="modal-content">
+        
+        <div class="modal-header modal-header-danger">
+          <div class="modal-title-wrap">
+            <span class="modal-badge-icon modal-badge-danger">🗑️</span>
+            <div>
+              <h3 class="modal-title">Konfirmasi Hapus Buku</h3>
+              <p class="modal-subtitle">Method: <strong class="text-delete">DELETE /api/books/:id</strong></p>
+            </div>
+          </div>
+          <button type="button" class="modal-close-btn" id="closeDeleteModalBtn">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="deleteBookId">
+          <p class="delete-warning-text">
+            Apakah Anda yakin ingin menghapus buku berikut dari database perpustakaan?
+          </p>
+          <div class="delete-book-preview">
+            <span class="badge badge-id" id="deleteBookBadgeId">BK-000</span>
+            <div class="delete-book-info">
+              <strong id="deleteBookTitle">Judul Buku</strong>
+              <small id="deleteBookAuthor">oleh Penulis</small>
+            </div>
+          </div>
+          <p class="delete-caution-note">
+            ⚠️ Tindakan ini bersifat permanen dan data yang dihapus tidak dapat dipulihkan.
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Batal</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+            <span>🗑️ Ya, Hapus Sekarang</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p class="footer-text">
+        © 2026 <strong>PustakaKu</strong> — Proyek Pemrograman Web (Express, Prisma ORM & Neon PostgreSQL)
+      </p>
+      <div class="footer-tags">
+        <span class="tag">Node.js Express</span>
+        <span class="tag">Prisma ORM 7</span>
+        <span class="tag">Neon PostgreSQL</span>
+        <span class="tag">REST API CRUD</span>
+        <span class="tag">HTML5 & CSS3</span>
+        <span class="tag">JavaScript Fetch</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT APP -->
+  <script src="js/app.js"></script>
+</body>
+</html>
